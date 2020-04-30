@@ -46,18 +46,18 @@ else:
 
 
 def _checkNull(result, func, arguments):
+    del arguments # unused
     if result:
         return result
-    else:
-        err = get_last_error() if "Windows" in _system() else get_errno()
-        raise OSError(err, _strerror(err))
+    err = get_last_error() if "Windows" in _system() else get_errno()
+    raise OSError(err, _strerror(err))
 
 
 def _checkNegative(result, func, arguments):
+    del arguments # unused
     if result >= 0:
         return result
-    else:
-        raise OSError(-result, _strerror(-result))
+    raise OSError(-result, _strerror(-result))
 
 
 # Python 2 and Python 3 compatible _isstring function.

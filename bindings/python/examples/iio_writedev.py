@@ -18,10 +18,10 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import time
 
-import iio
 import sys
 import signal
 import argparse
+import iio
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
