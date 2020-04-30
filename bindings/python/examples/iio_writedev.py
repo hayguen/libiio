@@ -24,25 +24,51 @@ import signal
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-n', '--network', type=str, metavar='',
-                    help='Use the network backend with the provided hostname.')
-parser.add_argument('-u', '--uri', type=str, metavar='',
-                    help='Use the context with the provided URI.')
-parser.add_argument('-b', '--buffer-size', type=int, metavar='',
-                    help='Size of the capture buffer. Default is 256.')
-parser.add_argument('-s', '--samples', type=int, metavar='',
-                    help='Number of samples to capture, 0 = infinite. Default is 0.')
-parser.add_argument('-T', '--timeout', type=int, metavar='',
-                    help='Buffer timeout in milliseconds. 0 = no timeout')
-parser.add_argument('-a', '--auto', action='store_true',
-                    help='Scan for available contexts and if only one is available use it.')
-parser.add_argument('-c', '--cyclic', action='store_true',
-                    help='Use cyclic buffer mode.')
-parser.add_argument('device', type=str, nargs=1)
-parser.add_argument('channel', type=str, nargs='*')
+parser.add_argument(
+    "-n",
+    "--network",
+    type=str,
+    metavar="",
+    help="Use the network backend with the provided hostname.",
+)
+parser.add_argument(
+    "-u", "--uri", type=str, metavar="", help="Use the context with the provided URI."
+)
+parser.add_argument(
+    "-b",
+    "--buffer-size",
+    type=int,
+    metavar="",
+    help="Size of the capture buffer. Default is 256.",
+)
+parser.add_argument(
+    "-s",
+    "--samples",
+    type=int,
+    metavar="",
+    help="Number of samples to capture, 0 = infinite. Default is 0.",
+)
+parser.add_argument(
+    "-T",
+    "--timeout",
+    type=int,
+    metavar="",
+    help="Buffer timeout in milliseconds. 0 = no timeout",
+)
+parser.add_argument(
+    "-a",
+    "--auto",
+    action="store_true",
+    help="Scan for available contexts and if only one is available use it.",
+)
+parser.add_argument(
+    "-c", "--cyclic", action="store_true", help="Use cyclic buffer mode."
+)
+parser.add_argument("device", type=str, nargs=1)
+parser.add_argument("channel", type=str, nargs="*")
 
-arg_ip = ''
-arg_uri = ''
+arg_ip = ""
+arg_uri = ""
 scan_for_context = False
 buffer_size = 256
 num_samples = 0
@@ -106,24 +132,24 @@ def create_context(scan_for_context, arg_uri, arg_ip):
         if scan_for_context:
             contexts = iio.scan_contexts()
             if len(contexts) == 0:
-                sys.stderr.write('No IIO context found.')
+                sys.stderr.write("No IIO context found.")
                 exit(1)
             elif len(contexts) == 1:
                 uri, _ = contexts.popitem()
                 ctx = iio.Context(_context=uri)
             else:
-                print('Multiple contexts found. Please select one using --uri!')
+                print("Multiple contexts found. Please select one using --uri!")
 
                 for uri, _ in contexts:
                     print(uri)
-        elif arg_uri != '':
+        elif arg_uri != "":
             ctx = iio.Context(_context=arg_uri)
-        elif arg_ip != '':
+        elif arg_ip != "":
             ctx = iio.NetworkContext(arg_ip)
         else:
             ctx = iio.Context()
     except FileNotFoundError:
-        sys.stderr.write('Unable to create IIO context')
+        sys.stderr.write("Unable to create IIO context")
         exit(1)
 
     return ctx
@@ -159,7 +185,11 @@ def write_data(dev, buffer, num_samples, buffer_size, cyclic):
     num_samples_set = num_samples > 0
 
     while app_running:
-        bytes_to_read = buffer._length if not num_samples_set else min(buffer._length, num_samples * dev.sample_size)
+        bytes_to_read = (
+            buffer._length
+            if not num_samples_set
+            else min(buffer._length, num_samples * dev.sample_size)
+        )
         write_len = bytes_to_read
         data = []
 
@@ -182,7 +212,7 @@ def write_data(dev, buffer, num_samples, buffer_size, cyclic):
 
         if ret == 0:
             if app_running:
-                sys.stderr.write('Unable to push buffer!')
+                sys.stderr.write("Unable to push buffer!")
                 exit(1)
             break
 
@@ -201,7 +231,7 @@ def main():
     dev = ctx.find_device(device_name)
 
     if dev is None:
-        sys.stderr.write('Device %s not found!' % device_name)
+        sys.stderr.write("Device %s not found!" % device_name)
         exit(1)
 
     if len(channels) == 0:
@@ -214,11 +244,11 @@ def main():
     buffer = iio.Buffer(dev, buffer_size, cyclic=cyclic)
 
     if buffer is None:
-        sys.stderr.write('Unable to create buffer!')
+        sys.stderr.write("Unable to create buffer!")
         exit(1)
 
     write_data(dev, buffer, num_samples, buffer_size, cyclic)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

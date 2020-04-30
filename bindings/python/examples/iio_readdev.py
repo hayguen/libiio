@@ -22,21 +22,46 @@ import sys
 import signal
 import argparse
 
-parser = argparse.ArgumentParser(description='iio_readdev')
-parser.add_argument('-n', '--network', type=str, metavar='',
-                    help='Use the network backend with the provided hostname.')
-parser.add_argument('-u', '--uri', type=str, metavar='',
-                    help='Use the context with the provided URI.')
-parser.add_argument('-b', '--buffer-size', type=int, metavar='',
-                    help='Size of the capture buffer. Default is 256.')
-parser.add_argument('-s', '--samples', type=int, metavar='',
-                    help='Number of samples to capture, 0 = infinite. Default is 0.')
-parser.add_argument('-T', '--timeout', type=int, metavar='',
-                    help='Buffer timeout in milliseconds. 0 = no timeout')
-parser.add_argument('-a', '--auto', action='store_true',
-                    help='Scan for available contexts and if only one is available use it.')
-parser.add_argument('device', type=str, nargs=1)
-parser.add_argument('channel', type=str, nargs='*')
+parser = argparse.ArgumentParser(description="iio_readdev")
+parser.add_argument(
+    "-n",
+    "--network",
+    type=str,
+    metavar="",
+    help="Use the network backend with the provided hostname.",
+)
+parser.add_argument(
+    "-u", "--uri", type=str, metavar="", help="Use the context with the provided URI."
+)
+parser.add_argument(
+    "-b",
+    "--buffer-size",
+    type=int,
+    metavar="",
+    help="Size of the capture buffer. Default is 256.",
+)
+parser.add_argument(
+    "-s",
+    "--samples",
+    type=int,
+    metavar="",
+    help="Number of samples to capture, 0 = infinite. Default is 0.",
+)
+parser.add_argument(
+    "-T",
+    "--timeout",
+    type=int,
+    metavar="",
+    help="Buffer timeout in milliseconds. 0 = no timeout",
+)
+parser.add_argument(
+    "-a",
+    "--auto",
+    action="store_true",
+    help="Scan for available contexts and if only one is available use it.",
+)
+parser.add_argument("device", type=str, nargs=1)
+parser.add_argument("channel", type=str, nargs="*")
 
 arg_ip = ""
 arg_uri = ""
@@ -116,7 +141,7 @@ def create_context(scan_for_context, arg_uri, arg_ip):
         else:
             ctx = iio.Context()
     except FileNotFoundError:
-        sys.stderr.write('Unable to create IIO context\n')
+        sys.stderr.write("Unable to create IIO context\n")
         exit(1)
 
     return ctx
@@ -143,7 +168,7 @@ def read_data(buffer, num_samples):
         Reads data from buffer.
     """
     if buffer is None:
-        sys.stderr.write('Unable to create buffer!\n')
+        sys.stderr.write("Unable to create buffer!\n")
         exit(1)
 
     while True:
@@ -151,7 +176,7 @@ def read_data(buffer, num_samples):
         samples = buffer.read()
 
         if num_samples > 0:
-            sys.stdout.buffer.write(samples[:min(num_samples, len(samples))])
+            sys.stdout.buffer.write(samples[: min(num_samples, len(samples))])
             num_samples -= min(num_samples, len(samples))
 
             if num_samples == 0:
@@ -171,7 +196,7 @@ def main():
     dev = ctx.find_device(device_name)
 
     if dev is None:
-        sys.stderr.write('Device %s not found!\n' % device_name)
+        sys.stderr.write("Device %s not found!\n" % device_name)
         exit(1)
 
     if len(channels) == 0:
@@ -186,5 +211,5 @@ def main():
     read_data(buffer, num_samples)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
