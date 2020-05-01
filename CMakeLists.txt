@@ -454,7 +454,7 @@ option(PYTHON_BINDINGS "Install Python bindings" OFF)
 option(MATLAB_BINDINGS "Build MATLAB bindings" OFF)
 add_subdirectory(bindings)
 
-if (WITH_MATLAB_BINDINGS_API)
+if (MATLAB_BINDINGS)
 	list(APPEND LIBIIO_EXTRA_HEADERS bindings/matlab/iio-wrapper.h)
 endif()
 
